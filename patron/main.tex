@@ -1,0 +1,342 @@
+\documentclass[a4paper]{article}
+
+\usepackage[margin=0cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+
+% \def\L{21}
+% \def\quartangle{0.7071}
+% \def\Ldeux{0.5*\L}
+% \def\Lsurquatre{0.5*\Ldeux}
+
+% \def\l{1.4142*\Ldeux}
+% \def\ldeux{0.5*\l}
+
+
+
+
+\begin{document}
+\thispagestyle{empty}
+
+% \begin{tikzpicture}[remember picture, overlay,
+%     shift={(current page.north west)},
+%     x=1cm,
+%     y=-1cm]
+
+%   % Constantes à définir avant
+%   % \def\Ldeux{10}
+%   % \def\Lsurquatre{4}
+%   % \def\quartangle{1}
+%   % \def\ldeux{0.5}
+
+%   \pgfmathsetmacro{\L}{21}
+%   \pgfmathsetmacro{\quartangle}{0.7071}
+%   \pgfmathsetmacro{\Ldeux}{0.5*\L}
+%   \pgfmathsetmacro{\margelettre}{0.5}
+%   \pgfmathsetmacro{\Lsurquatre}{0.5*\Ldeux+\margelettre}
+
+%   \pgfmathsetmacro{\l}{1.4142*\Ldeux}
+%   \pgfmathsetmacro{\shift}{2}
+
+%   \pgfmathsetmacro{\ldeux}{0.5*\l}
+%   \draw (0,\L) -- (\L,\L);
+
+  
+
+
+
+%   \pgfmathsetmacro{\relicat}{\l-\ldeux-\Lsurquatre}
+%   %--- Points centraux
+%   \coordinate (A) at (\L/2,\L/2);
+%   \coordinate (B) at ($(A)-(\Lsurquatre*\quartangle,\Lsurquatre*\quartangle)$);
+%   \coordinate (C) at ($(A)+(\Lsurquatre*\quartangle,\Lsurquatre*\quartangle)$);
+
+%   %--- Points autour de B
+%   \coordinate (D) at ($(B)+(\ldeux*\quartangle,-\ldeux*\quartangle)$);
+%   \coordinate (E) at ($(B)+(-\ldeux*\quartangle,\ldeux*\quartangle)$);
+
+%   \coordinate (Eprime) at ($(B)+(-\ldeux*\quartangle,\ldeux*\quartangle)$);
+
+
+
+%   %--- Points autour de C'
+%   \coordinate (F) at ($(C)+(-\ldeux*\quartangle,\ldeux*\quartangle)$);
+%   \coordinate (G) at ($(C)+(\ldeux*\quartangle,-\ldeux*\quartangle)$);
+
+
+%   %pt d'angles
+%   \coordinate (H) at ($(F)+(-\relicat*\quartangle,+\relicat*\quartangle)$);
+%   \coordinate (I) at ($(G)+(\relicat*\quartangle,-\relicat*\quartangle)$);
+
+
+
+%   \coordinate (J) at ($(F)+(\relicat*\quartangle,+\relicat*\quartangle)$);
+
+%   \coordinate (K) at ($(E)+(-\relicat*\quartangle,+\relicat*\quartangle)$);
+%   \coordinate (L) at ($(E)+(-\relicat*\quartangle,-\relicat*\quartangle)$);
+
+
+%   \coordinate (M) at ($(D)+(-\relicat*\quartangle,-\relicat*\quartangle)$);
+%   \coordinate (N) at ($(D)+(+\relicat*\quartangle,-\relicat*\quartangle)$);
+
+
+%   \coordinate (O) at ($(G)+(+\relicat*\quartangle,+\relicat*\quartangle)$);
+
+
+%   \coordinate (Kprime) at ($(K)+(0,\shift)$);
+%   \coordinate (Lprime) at ($(L)+(0,-\shift)$);
+%   \coordinate (Mprime) at ($(M)+(-\shift,0)$);
+%   \coordinate (Nprime) at ($(N)+(+\shift,0)$);
+%   \coordinate (Jprime) at ($(J)+(\shift,0)$);
+%   \coordinate (Oprime) at ($(O)+(0,\shift)$);
+
+%   % \coordinate (S) at (\L/2-\Lsurquatre*\quartangle-\ldeux*\quartangle,\L/2-\Lsurquatre*\quartangle-\ldeux*\quartangle);
+
+
+
+
+
+
+
+%   \draw (E) -- (F);
+%   \draw (F) -- (G);
+%   \draw (G) -- (D);
+%   \draw (D) -- (E);
+
+%   \draw (F) -- (H);
+%   \draw (G) -- (I);
+%   % \draw (S) -- (E);
+
+
+  
+
+
+
+%   % --- Dessin des points
+%   % \foreach \P in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O}
+%   %   \fill (\P) circle (3pt);
+
+%   % \foreach \P in {Kprime,Lprime,Mprime,Nprime,Jprime,Oprime}
+%   %   \fill (\P) circle (3pt);
+
+%   %--- Noms des points
+%   % \node[above right] at (A) {$A$};
+%   \node[below left]  at (B) {$B$};
+%   % \node[above right] at (C) {$C$};
+%   % \node[below right] at (D) {$D$};
+%   \node[above left]  at (E) {$E$};
+%   \node[above right]  at (Eprime) {$E'$};
+
+%   % \node[above left]  at (F) {$F$};
+%   % \node[below left] at (G) {$G$};
+%   % \node[below left] at (H) {$H$};
+%   % \node[below left] at (I) {$I$};
+%   % \node[below left] at (J) {$J$};
+%   % \node[below right] at (K) {$K$};
+%   % \node[below right] at (L) {$L$};
+%   % \node[below right] at (M) {$M$};
+%   % \node[below right] at (N) {$N$};
+%   % \node[below left] at (O) {$O$};
+
+%   % \node[below right] at (Kprime) {$K'$};
+%   % \node[below right] at (Lprime) {$L'$};
+%   % \node[below right] at (Mprime) {$M'$};
+%   % \node[below right] at (Nprime) {$N'$};
+%   % \node[below right] at (Jprime) {$J'$};
+%   % \node[below left] at (Oprime) {$O'$};
+
+
+
+%   \draw (E) -- (Kprime);
+%   \draw (E) -- (Lprime);
+%   \draw (D) -- (Mprime);
+%   \draw (D) -- (Nprime);
+%   \draw (F) -- (Jprime);
+%   \draw (G) -- (Oprime);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \end{tikzpicture}
+
+
+
+
+\begin{tikzpicture}[remember picture, overlay,
+    shift={(current page.north west)},
+    x=1cm,
+    y=-1cm]
+
+  % Constantes à définir avant
+  % \def\Ldeux{10}
+  % \def\Lsurquatre{4}
+  % \def\quartangle{1}
+  % \def\ldeux{0.5}
+
+  \pgfmathsetmacro{\L}{21}
+  \pgfmathsetmacro{\quartangle}{0.7071}
+  \pgfmathsetmacro{\Ldeux}{0.5*\L}
+  \pgfmathsetmacro{\margelettre}{0.1}
+  \pgfmathsetmacro{\Lsurquatre}{0.5*\Ldeux+\margelettre}
+
+  \pgfmathsetmacro{\l}{1.4142*2*\Lsurquatre}
+  \pgfmathsetmacro{\shift}{2}
+
+  \pgfmathsetmacro{\ldeux}{0.5*\l}
+  \draw (0,\L) -- (\L,\L);
+
+  
+
+
+
+  \pgfmathsetmacro{\relicat}{1.4142*\L/2-\ldeux-\Lsurquatre}
+  %--- Points centraux
+  \coordinate (A) at (\L/2,\L/2);
+  \coordinate (B) at ($(A)-(\Lsurquatre*\quartangle,\Lsurquatre*\quartangle)$);
+  \coordinate (C) at ($(A)+(\Lsurquatre*\quartangle,\Lsurquatre*\quartangle)$);
+
+  %--- Points autour de B
+  \coordinate (D) at ($(B)+(\ldeux*\quartangle,-\ldeux*\quartangle)$);
+  \coordinate (E) at ($(B)+(-\ldeux*\quartangle,\ldeux*\quartangle)$);
+
+  \coordinate (Eprime) at ($(B)+(-0.25*1.4142*\L*\quartangle,0.25*1.4142*\L*\quartangle)$);
+  \coordinate (Dprime) at ($(B)+(0.25*1.4142*\L*\quartangle,-0.25*1.4142*\L*\quartangle)$);
+
+  \coordinate (AA) at ($(B)+(-0.25*1.4142*\L*\quartangle,-0.25*1.4142*\L*\quartangle)$);
+  %--- Points autour de C'
+  \coordinate (F) at ($(C)+(-\ldeux*\quartangle,\ldeux*\quartangle)$);
+  \coordinate (G) at ($(C)+(\ldeux*\quartangle,-\ldeux*\quartangle)$);
+
+
+  %pt d'angles
+  \coordinate (H) at ($(F)+(-\relicat*\quartangle,+\relicat*\quartangle)$);
+  \coordinate (I) at ($(G)+(\relicat*\quartangle,-\relicat*\quartangle)$);
+
+
+
+  \coordinate (J) at ($(F)+(\relicat*\quartangle,+\relicat*\quartangle)$);
+
+  \coordinate (K) at ($(E)+(-\relicat*\quartangle,+\relicat*\quartangle)$);
+  \coordinate (L) at ($(E)+(-\relicat*\quartangle,-\relicat*\quartangle)$);
+
+
+  \coordinate (M) at ($(D)+(-\relicat*\quartangle,-\relicat*\quartangle)$);
+  \coordinate (N) at ($(D)+(+\relicat*\quartangle,-\relicat*\quartangle)$);
+
+
+  \coordinate (O) at ($(G)+(+\relicat*\quartangle,+\relicat*\quartangle)$);
+
+
+  \coordinate (Kprime) at ($(K)+(0,\shift)$);
+  \coordinate (Lprime) at ($(L)+(0,-\shift)$);
+  \coordinate (Mprime) at ($(M)+(-\shift,0)$);
+  \coordinate (Nprime) at ($(N)+(+\shift,0)$);
+  \coordinate (Jprime) at ($(J)+(\shift,0)$);
+  \coordinate (Oprime) at ($(O)+(0,\shift)$);
+
+  % \coordinate (S) at (\L/2-\Lsurquatre*\quartangle-\ldeux*\quartangle,\L/2-\Lsurquatre*\quartangle-\ldeux*\quartangle);
+
+
+
+
+
+
+
+  \draw (E) -- (F);
+  \draw (F) -- (G);
+  \draw (G) -- (D);
+  \draw (D) -- (E);
+
+  \draw (F) -- (H);
+  \draw (G) -- (I);
+  % \draw (S) -- (E);
+
+
+  
+
+
+
+  % --- Dessin des points
+  % \foreach \P in {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O}
+  %   \fill (\P) circle (3pt);
+
+  % \foreach \P in {AA,Kprime,Lprime,Mprime,Nprime,Jprime,Oprime,Eprime,Dprime}
+  %   \fill (\P) circle (3pt);
+
+  %--- Noms des points
+  % \node[above right] at (A) {$A$};
+  % \node[below left]  at (B) {$B$};
+  % \node[above right] at (C) {$C$};
+  % \node[below right] at (D) {$D$};
+  % \node[above left]  at (E) {$E$};
+  % \node[above right]  at (Eprime) {$E'$};
+  % \node[above right]  at (Dprime) {$D'$};
+  % \node[above right]  at (AA) {$a$};
+
+
+
+  % \node[above left]  at (F) {$F$};
+  % \node[below left] at (G) {$G$};
+  % \node[below left] at (H) {$H$};
+  % \node[below left] at (I) {$I$};
+  % \node[below left] at (J) {$J$};
+  % \node[below right] at (K) {$K$};
+  % \node[below right] at (L) {$L$};
+  % \node[below right] at (M) {$M$};
+  % \node[below right] at (N) {$N$};
+  % \node[below left] at (O) {$O$};
+  
+
+  % \node[below right] at (Kprime) {$K'$};
+  % \node[below right] at (Lprime) {$L'$};
+  % \node[below right] at (Mprime) {$M'$};
+  % \node[below right] at (Nprime) {$N'$};
+  % \node[below right] at (Jprime) {$J'$};
+  % \node[below left] at (Oprime) {$O'$};
+
+
+
+  \draw (E) -- (Kprime);
+  \draw (E) -- (Lprime);
+  \draw (D) -- (Mprime);
+  \draw (D) -- (Nprime);
+  \draw (F) -- (Jprime);
+  \draw (G) -- (Oprime);
+  \draw (Eprime) -- (AA);
+  \draw (Dprime) -- (AA);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{tikzpicture}
+
+
+
+\end{document}

@@ -6,3 +6,8 @@ pdhg_uot_pybind.cpp
 pduot.zip
 test.py
 testcpp.py
+*.log
+*.fls
+*.aux
+*.fdb_latexmk
+*.gz

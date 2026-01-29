@@ -137,10 +137,10 @@ def pdhg_uot(
             u_next = factor * (u + sigma * (a - row_sum))
             v_next = factor * (v + sigma * (b - col_sum))
 
-            u_prev = u
+            u_prev = u  # .copy()
             u = u_next
 
-            v_prev = v
+            v_prev = v  # .copy()
             v = v_next
 
             theta = 1.0 / np.sqrt(1 + sigma * (alpha))
@@ -162,8 +162,113 @@ def pdhg_uot(
             P_next = np.maximum(0.0, P - tau * grad)
 
             # sauvegarde
-            P_prev = P
+            P_prev = P.copy()
             P = P_next
+
+        # obj = primal_cost(P, C, a, b, alpha, reg=reg)
+        obj_values.append(obj)
+        kkts.append(kkt_cond)
+        if P_ref is not None:
+            tps.append(error_plan)
+
+        if verbose and (k % 1000 == 0 or k == niter - 1):
+            print(
+                f"Iter {k:4d} | Obj = {obj:.3e} | kkt = {kkt(P, u, v, C, a, b, alpha, verbose=True):.2e}"
+            )
+
+    return P, u, v, np.array(obj_values), np.array(tps), np.array(kkts)
+
+
+def spdhg_uot(
+    C,
+    a,
+    b,
+    alpha,
+    tau=0.1,
+    sigma=0.1,
+    niter=500,
+    verbose=False,
+    tol=1e-14,
+    P_ref=None,
+    k_kkt=100,
+    accel=False,
+):
+    n, m = C.shape
+    P = np.zeros((n, m))
+    u = np.zeros(n)
+    v = np.zeros(m)
+    u_prev = u
+    v_prev = v
+    obj_values = []
+    kkts = []
+    tps = []
+    P_bar = P.copy()
+    if accel:
+        theta = 0
+    for k in range(niter):
+        # on verifie les kkt tous les k_kkt
+        if k % k_kkt == 0:
+            obj = primal_cost(P, C, a, b, alpha)
+            if P_ref is not None:
+                error_plan = np.abs(P - P_ref).max()
+            kkt_cond = kkt(P, u, v, C, a, b, alpha)
+            if kkt_cond < tol:
+                print("break")
+                break
+
+        # acceleration
+        if accel:
+            u_bar = u + theta * (u - u_prev)
+            v_bar = v + theta * (v - v_prev)
+
+            # Primal update
+            grad = C - u_bar[:, None] - v_bar[None, :]
+            P = np.maximum(0.0, P - tau * grad)
+
+            # Dual updates
+            row_sum = P @ np.ones(m)
+            col_sum = P.T @ np.ones(n)
+            factor = 1 / (1 + sigma * alpha)
+            u_next = factor * (u + sigma * (a - row_sum))
+            v_next = factor * (v + sigma * (b - col_sum))
+
+            u_prev = u  # .copy()
+            u = u_next
+
+            v_prev = v  # .copy()
+            v = v_next
+
+            theta = 1.0 / np.sqrt(1 + sigma * (alpha))
+            tau = tau / theta
+            sigma = sigma * theta
+
+        # version normale
+        else:
+            # dual
+            row_sum = P_bar @ np.ones(m)
+            col_sum = P_bar.T @ np.ones(n)
+            u = (u + sigma * (a - row_sum)) / (1 + sigma * alpha)
+            v = (v + sigma * (b - col_sum)) / (1 + sigma * alpha)
+
+            n_rd = n // 1
+            # primal
+            rows = np.random.choice(n, size=n_rd, replace=False)
+            grad = C[rows, :] - u[rows, None] - v[None, :]
+            # mise à jour uniquement sur ces lignes
+            P_next = P.copy()
+            P_next[rows, :] = np.maximum(0.0, P[rows, :] - tau * grad)
+            # P_next = np.maximum(0.0, P - tau * grad)
+
+            # sauvegarde
+            P_prev = P.copy()
+            P = P_next
+            # P_bar = 2 * P - P_prev if k > 0 else P.copy()
+            P_bar = P.copy()
+            # print(P.shape, P_bar.shape, P_prev.shape)
+            if k > 0:
+                P_bar[rows, :] = (1 + n**2) * P[rows, :] - (n**2) * P_prev[
+                    rows, :
+                ]
 
         # obj = primal_cost(P, C, a, b, alpha, reg=reg)
         obj_values.append(obj)
@@ -184,9 +289,9 @@ if __name__ == "__main__":
     On résout le pb:
     min_{P>= 0} P:C + 1/(2*alpha) [|P1-a|^2+|P^T1-b|^2]
     """
-    np.random.seed(2)
+    np.random.seed(0)
     # instance du probleme
-    n = 40
+    n = 100
     x = np.linspace(0, 1, n)
     C = np.abs(x[:, None] - x[None, :]) ** 2
     C /= C.max()
@@ -194,37 +299,54 @@ if __name__ == "__main__":
     a /= a.sum()
     b = np.random.rand(n)
     b /= b.sum()
-    alpha = 0.1
+    alpha = 1
 
     # resolution avec CVXPY
     solver = CvxSolver(C, a, b, alpha)
-    tp = solver.solve(eps=1e-18)
+    tp = solver.solve(eps=1e-15)
     cost_cvx = primal_cost(tp, C, a, b, alpha)
 
-    tau = sigma = 0.8 / (2 * n) ** 0.5
-    # version acceleree
-    P_accel, u_accel, v_accel, objs_accel, tps_accel, kkts_accel = pdhg_uot(
-        C,
-        a,
-        b,
-        alpha=alpha,
-        tau=tau,
-        sigma=sigma,
-        niter=20_000,
-        verbose=True,
-        P_ref=tp,
-        accel=True,
-    )
+    tau = n ** (-1.5)
+    sigma = n ** (-1.5)
+    # tau = sigma = 1 / (2 * n) ** 0.5
 
-    # version normale
-    P, u, v, objs, tps, kkts = pdhg_uot(
+    # # version acceleree
+    # P_accel, u_accel, v_accel, objs_accel, tps_accel, kkts_accel = pdhg_uot(
+    #     C,
+    #     a,
+    #     b,
+    #     alpha=alpha,
+    #     tau=tau,
+    #     sigma=sigma,
+    #     niter=20_000,
+    #     verbose=True,
+    #     P_ref=tp,
+    #     accel=True,
+    # )
+
+    # # version normale
+    # P, u, v, objs, tps, kkts = pdhg_uot(
+    #     C,
+    #     a,
+    #     b,
+    #     alpha=alpha,
+    #     tau=tau,
+    #     sigma=sigma,
+    #     niter=20_000,
+    #     verbose=True,
+    #     P_ref=tp,
+    #     accel=False,
+    # )
+
+    # version sto
+    P, u, v, objs_sto, tps_sto, kkts_sto = spdhg_uot(
         C,
         a,
         b,
         alpha=alpha,
         tau=tau,
         sigma=sigma,
-        niter=20_000,
+        niter=200_000,
         verbose=True,
         P_ref=tp,
         accel=False,
@@ -234,24 +356,45 @@ if __name__ == "__main__":
     ## Affichage ####
     #################
 
+    # plt.figure(figsize=(6, 4))
+    # plt.plot(
+    #     np.abs(objs_accel - cost_cvx),
+    #     label=r"Obj-Obj$^*$ (accel)",
+    #     color="green",
+    # )
+    # plt.plot(tps_accel, label=r"$\|P-P^*\|_\infty$ (accel)", color="blue")
+    # plt.plot(kkts_accel, label="KKT (accel)", color="red")
+
+    # plt.plot(
+    #     np.abs(objs - cost_cvx),
+    #     marker="x",
+    #     label=r"Obj-Obj$^*$",
+    #     color="green",
+    #     ms=4,
+    # )
+    # plt.plot(tps, label=r"$\|P-P^*\|_\infty$", color="blue", marker="x", ms=4)
+    # plt.plot(kkts, label="KKT", color="red", marker="x", ms=4)
+    # plt.legend()
+    # plt.xlabel("Iteration")
+    # plt.yscale("log")
+    # # plt.title(f"PDHG convergence (n={n})")
+    # plt.grid(True)
+    # plt.tight_layout()
+    # plt.show()
+
     plt.figure(figsize=(6, 4))
-    plt.plot(
-        np.abs(objs_accel - cost_cvx),
-        label=r"Obj-Obj$^*$ (accel)",
-        color="green",
-    )
-    plt.plot(tps_accel, label=r"$\|P-P^*\|_\infty$ (accel)", color="blue")
-    plt.plot(kkts_accel, label="KKT (accel)", color="red")
 
     plt.plot(
-        np.abs(objs - cost_cvx),
+        np.abs(objs_sto - cost_cvx),
         marker="x",
-        label=r"Obj-Obj$^*$",
+        label=r"Obj-Obj$^*$ sto",
         color="green",
-        ms=4,
+        ms=1,
     )
-    plt.plot(tps, label=r"$\|P-P^*\|_\infty$", color="blue", marker="x", ms=4)
-    plt.plot(kkts, label="KKT", color="red", marker="x", ms=4)
+    plt.plot(
+        tps_sto, label=r"$\|P-P^*\|_\infty$ sto", color="blue", marker="x", ms=1
+    )
+    plt.plot(kkts_sto, label="KKT sto", color="red", marker="x", ms=1)
     plt.legend()
     plt.xlabel("Iteration")
     plt.yscale("log")
